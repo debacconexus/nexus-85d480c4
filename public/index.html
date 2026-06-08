@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maternal Mortality Surveillance System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #07192f 0%, #0a2040 100%);
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .header {
+            background: #07192f;
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+        
+        .igm-status {
+            background: #33e0c4;
+            color: #07192f;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-weight: 600;
+        }
+        
+        .system-time {
+            color: #33e0c4;
+        }
+        
+        .header-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #33e0c4;
+        }
+        
+        .nav-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .tab-btn {
+            padding: 0.7rem 1.5rem;
+            background: transparent;
+            border: 2px solid #33e0c4;
+            color: #33e0c4;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .tab-btn.active {
+            background: #33e0c4;
+            color: #07192f;
+        }
+        
+        .tab-btn:hover {
+            background: rgba(51, 224, 196, 0.1);
+        }
+        
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        
+        .tab-content {
+            display: none;
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #07192f, #0a2040);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #33e0c4, #ffca58);
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #33e0c4;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            font-size: 1rem;
+            color: #cccccc;
+        }
+        
+        .form-container {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .form-section {
+            margin-bottom: 2rem;
+        }
+        
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #07192f;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #33e0c4;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #07192f;
+        }
+        
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            transition: border-color 0.3s;
+        }
+        
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #33e0c4;
+        }
+        
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #33e0c4, #00b39f);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: #ffca58;
+            color: #07192f;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-left: 1rem;
+        }
+        
+        .search-bar {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #33e0c4;
+            border-radius: 25px;
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .contact-log {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .contact-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .contact-name {
+            font-weight: 600;
+            color: #07192f;
+            font-size: 1.1rem;
+        }
+        
+        .contact-role {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .contact-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        
+        .footer {
+            background: #07192f;
+            color: #cccccc;
+            text-align: center;
+            padding: 1.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .footer a {
+            color: #33e0c4;
+            text-decoration: none;
+        }
+        
+        @media (max-width: 768px) {
+            .header {
+                padding: 1rem;
+            }
+            
+            .nav-tabs {
+                flex-wrap: wrap;
+                gap: 0.5rem;
+            }
+            
+            .tab-btn {
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+            }
+            
+            .main-content {
+                padding: 1rem;
+            }
+            
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="status-bar">
+            <div class="igm-status">IGM Active</div>
+            <div class="system-time" id="systemTime"></div>
+        </div>
+        <h1 class="header-title">Maternal Mortality Surveillance System</h1>
+        <nav class="nav-tabs">
+            <button class="tab-btn active" onclick="switchTab('dashboard')">Dashboard</button>
+            <button class="tab-btn" onclick="switchTab('intake')">Case Intake</button>
+            <button class="tab-btn" onclick="switchTab('contacts')">Contact Log</button>
+            <button class="tab-btn" onclick="switchTab('search')">Search & Reports</button>
+        </nav>
+    </header>
+
+    <main class="main-content">
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="tab-content active">
+            <div class="dashboard-grid">
+                <div class="stat-card">
+                    <div class="stat-number">247</div>
+                    <div class="stat-label">Total Cases Recorded</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">18</div>
+                    <div class="stat-label">Cases This Month</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">156</div>
+                    <div class="stat-label">Preventable Deaths</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">12</div>
+                    <div class="stat-label">Districts Covered</div>
+                </div>
+            </div>
+            
+            <div class="form-container">
+                <h2 class="section-title">Recent Activity</h2>
+                <div class="alert alert-warning">
+                    <strong>Pending Review:</strong> 5 cases require medical officer validation before UN reporting.
+                </div>
+                <div class="alert alert-success">
+                    <strong>Report Submitted:</strong> Monthly maternal mortality report sent to UN Health Division.
+                </div>
+                
+                <h3 style="margin-top: 2rem; color: #07192f;">Quick Actions</h3>
+                <div style="margin-top: 1rem;">
+                    <button class="btn-primary" onclick="switchTab('intake')">New Case Entry</button>
+                    <button class="btn-secondary">Generate Monthly Report</button>
+                    <button class="btn-secondary">Export Data</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Case Intake Tab -->
+        <div id="intake" class="tab-content">
+            <form class="form-container" id="caseIntakeForm">
+                <div class="form-section">
+                    <h2 class="section-title">Basic Information</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Case ID</label>
+                            <input type="text" class="form-input" id="caseId" placeholder="Auto-generated" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Date of Death</label>
+                            <input type="date" class="form-input" id="dateOfDeath" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">District</label>
+                            <select class="form-select" id="district" required>
+                                <option value="">Select District</option>
+                                <option value="district1">Central District</option>
+                                <option value="district2">Northern District</option>
+                                <option value="district3">Southern District</option>
+                                <option value="district4">Eastern District</option>
+                                <option value="district5">Western District</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Field Worker ID</label>
+                            <input type="text" class="form-input" id="fieldWorkerId" placeholder="Enter your ID" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h2 class="section-title">Deceased Information</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Full Name</label>
+                            <input type="text" class="form-input" id="deceasedName" placeholder="Enter full name" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Age</label>
+                            <input type="number" class="form-input" id="age" min="10" max="60" placeholder="Age at death" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Marital Status</label>
+                            <select class="form-select" id="maritalStatus" required>
+                                <option value="">Select Status</option>
+                                <option value="single">Single</option>
+                                <option value="married">Married</option>
+                                <option value="divorced">Divorced</option>
+                                <option value="widowed">Widowed</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Education Level</label>
+                            <select class="form-select" id="education">
+                                <option value="">Select Level</option>
+                                <option value="none">No formal education</option>
+                                <option value="primary">Primary school</option>
+                                <option value="secondary">Secondary school</option>
+                                <option value="tertiary">Higher education</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h2 class="section-title">Pregnancy & Medical Details</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Gestational Age (weeks)</label>
+                            <input type="number" class="form-input" id="gestationalAge" min="0" max="45" placeholder="Weeks">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Number of Previous Pregnancies</label>
+                            <input type="number" class="form-input" id="previousPregnancies" min="0" placeholder="Number">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Place of Death</label>
+                            <select class="form-select" id="placeOfDeath" required>
+                                <option value="">Select Location</option>
+                                <option value="hospital">Hospital</option>
+                                <option value="clinic">Health Clinic</option>
+                                <option value="home">Home</option>
+                                <option value="transport">In Transport</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Cause of Death</label>
+                            <select class="form-select" id="causeOfDeath" required>
+                                <option value="">Select Cause</option>
+                                <option value="hemorrhage">Severe bleeding/hemorrhage</option>
+                                <option value="infection">Infection/sepsis</option>
+                                <option value="hypertension">High blood pressure disorders</option>
+                                <option value="complications">Labor complications</option>
+                                <option value="abortion">Unsafe abortion</option>
+                                <option value="other">Other medical condition</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h2 class="section-title">Preventability Assessment</h2>
+                    <div class="form-group">
+                        <label class="form-label">Was this death preventable?</label>
+                        <select class="form-select" id="preventable" required>
+                            <option value="">Select Assessment</option>
+                            <option value="definitely">Definitely preventable</option>
+                            <option value="probably">Probably preventable</option>
+                            <option value="possibly">Possibly preventable</option>
+                            <option value="not">Not preventable</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Contributing Factors</label>
+                        <textarea class="form-textarea" id="contributingFactors" placeholder="Describe factors that contributed to the death (delays in care, lack of resources, etc.)"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Recommendations</label>
+                        <textarea class="form-textarea" id="recommendations" placeholder="Recommendations for preventing similar deaths"></textarea>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h2 class="section-title">Contact & Family Information</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Next of Kin Name</label>
+                            <input type="text" class="form-input" id="nextOfKinName" placeholder="Full name">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Relationship</label>
+                            <input type="text" class="form-input" id="relationship" placeholder="e.g., Spouse, Mother, Sister">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Contact Number</label>
